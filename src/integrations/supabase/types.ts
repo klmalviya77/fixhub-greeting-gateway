@@ -72,6 +72,44 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          category_id: string
+          created_at: string
+          description: string
+          duration: number
+          id: string
+          name: string
+          rate: number
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          description: string
+          duration: number
+          id?: string
+          name: string
+          rate: number
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          description?: string
+          duration?: number
+          id?: string
+          name?: string
+          rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
