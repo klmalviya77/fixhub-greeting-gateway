@@ -15,7 +15,8 @@ const AnimatedText = ({
   delay = 0,
   element: Element = 'span'
 }: AnimatedTextProps) => {
-  const textRef = useRef<HTMLElement>(null);
+  // Use a more generic HTMLDivElement type that's compatible with all elements
+  const textRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -46,7 +47,7 @@ const AnimatedText = ({
   
   return (
     <Element
-      ref={textRef}
+      ref={textRef as React.RefObject<any>}
       className={cn(
         'opacity-0 transform translate-y-4 transition-all duration-700 ease-apple',
         className
