@@ -122,10 +122,8 @@ const ServicePage = () => {
   
   // Handle booking
   const handleBookService = (serviceId: string) => {
-    // For now, we'll just navigate to a booking page with the service ID
-    // This will be implemented later
-    toast.info('Booking functionality will be implemented soon');
-    // navigate(`/booking?service=${serviceId}`);
+    // Navigate to the booking page with the service ID
+    navigate(`/booking?service=${serviceId}`);
   };
   
   // Display error states
