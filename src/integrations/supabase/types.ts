@@ -9,6 +9,81 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          address: string
+          amount: number
+          area: string
+          commission: number | null
+          created_at: string
+          date: string
+          discount_applied: boolean | null
+          discount_value: number | null
+          final_amount: number | null
+          id: string
+          payment_method: string | null
+          pincode: string
+          service_id: string
+          status: string
+          technician_id: string | null
+          time: string
+          user_id: string | null
+        }
+        Insert: {
+          address: string
+          amount: number
+          area: string
+          commission?: number | null
+          created_at?: string
+          date: string
+          discount_applied?: boolean | null
+          discount_value?: number | null
+          final_amount?: number | null
+          id?: string
+          payment_method?: string | null
+          pincode: string
+          service_id: string
+          status: string
+          technician_id?: string | null
+          time: string
+          user_id?: string | null
+        }
+        Update: {
+          address?: string
+          amount?: number
+          area?: string
+          commission?: number | null
+          created_at?: string
+          date?: string
+          discount_applied?: boolean | null
+          discount_value?: number | null
+          final_amount?: number | null
+          id?: string
+          payment_method?: string | null
+          pincode?: string
+          service_id?: string
+          status?: string
+          technician_id?: string | null
+          time?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           color: string
@@ -35,6 +110,139 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      commissions: {
+        Row: {
+          amount: number
+          booking_id: string
+          id: string
+          payment_method: string | null
+          status: string
+          technician_id: string
+          timestamp: string
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          id?: string
+          payment_method?: string | null
+          status: string
+          technician_id: string
+          timestamp?: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          id?: string
+          payment_method?: string | null
+          status?: string
+          technician_id?: string
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commissions_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      offers: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_type: string
+          discount_value: number
+          end_date: string
+          id: string
+          name: string
+          service_id: string | null
+          start_date: string
+          status: string
+          valid_for: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_type: string
+          discount_value: number
+          end_date: string
+          id?: string
+          name: string
+          service_id?: string | null
+          start_date: string
+          status: string
+          valid_for: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          end_date?: string
+          id?: string
+          name?: string
+          service_id?: string | null
+          start_date?: string
+          status?: string
+          valid_for?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offers_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          booking_id: string
+          id: string
+          payment_method: string
+          status: string
+          timestamp: string
+          transaction_id: string | null
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          id?: string
+          payment_method: string
+          status: string
+          timestamp?: string
+          transaction_id?: string | null
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          id?: string
+          payment_method?: string
+          status?: string
+          timestamp?: string
+          transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {
@@ -103,6 +311,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technicians: {
+        Row: {
+          address: string | null
+          area: string
+          availability: boolean | null
+          category_id: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string
+          pincode: string
+          rating: number | null
+        }
+        Insert: {
+          address?: string | null
+          area: string
+          availability?: boolean | null
+          category_id?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone: string
+          pincode: string
+          rating?: number | null
+        }
+        Update: {
+          address?: string | null
+          area?: string
+          availability?: boolean | null
+          category_id?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          pincode?: string
+          rating?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technicians_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"

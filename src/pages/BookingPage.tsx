@@ -1,19 +1,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, IndianRupee } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, IndianRupee, Gift, AlertTriangle } from 'lucide-react';
 import Container from '@/components/ui/container';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { format, addDays } from 'date-fns';
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/context/AuthContext';
+import { 
+  getApplicableOffers, 
+  createBooking, 
+  calculateDiscount,
+  BookingDetails
+} from '@/utils/bookingUtils';
 
-// Type definition
+// Type definitions
 interface Service {
   id: string;
   name: string;
@@ -23,18 +30,33 @@ interface Service {
   category_id: string;
 }
 
+interface Offer {
+  id: string;
+  name: string;
+  description: string | null;
+  discount_type: 'Percentage' | 'Flat Amount';
+  discount_value: number;
+  valid_for: 'New Users' | 'All Users';
+  service_id: string | null;
+}
+
 const BookingPage = () => {
   const [searchParams] = useSearchParams();
   const serviceId = searchParams.get('service');
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   
+  // Form state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+  const [area, setArea] = useState('');
+  const [pincode, setPincode] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [notes, setNotes] = useState('');
+  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Generate next 7 available dates
@@ -52,8 +74,8 @@ const BookingPage = () => {
   // Fetch service details
   const { 
     data: service, 
-    isLoading,
-    error
+    isLoading: isServiceLoading,
+    error: serviceError
   } = useQuery({
     queryKey: ['service', serviceId],
     queryFn: async () => {
@@ -74,28 +96,102 @@ const BookingPage = () => {
     },
     enabled: !!serviceId
   });
+
+  // Fetch applicable offers
+  const { 
+    data: offers = [], 
+    isLoading: isOffersLoading 
+  } = useQuery({
+    queryKey: ['offers', serviceId, isAuthenticated],
+    queryFn: async () => {
+      if (!serviceId) return [];
+      // Assume new user if they're newly registered
+      const isNewUser = !!user && new Date(user.created_at).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000;
+      return getApplicableOffers(serviceId, isNewUser);
+    },
+    enabled: !!serviceId && isAuthenticated
+  });
+
+  // Calculate final amount with discount if applicable
+  const calculateFinalAmount = () => {
+    if (!service) return { originalAmount: 0, discountValue: 0, finalAmount: 0 };
+    
+    const originalAmount = service.rate;
+    
+    if (!selectedOffer) {
+      return { originalAmount, discountValue: 0, finalAmount: originalAmount };
+    }
+    
+    const { discountValue, finalAmount } = calculateDiscount(originalAmount, selectedOffer);
+    
+    return { originalAmount, discountValue, finalAmount };
+  };
+  
+  const { originalAmount, discountValue, finalAmount } = calculateFinalAmount();
+  
+  // Handle offer selection
+  const handleOfferSelect = (offer: Offer | null) => {
+    setSelectedOffer(offer);
+  };
   
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!service) return;
     
     setIsSubmitting(true);
     
-    // Here you would typically save this to a bookings table in Supabase
-    // For now, we'll just simulate the API call with a timeout
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast.success('Booking submitted successfully!');
+    try {
+      if (!isAuthenticated) {
+        // Store booking details in localStorage and redirect to login
+        const bookingDetails: BookingDetails = {
+          serviceId: service.id,
+          date,
+          time,
+          name,
+          address,
+          area,
+          pincode,
+          amount: service.rate
+        };
+        
+        localStorage.setItem('pendingBooking', JSON.stringify(bookingDetails));
+        toast.info('Please log in to complete your booking');
+        navigate('/login');
+        return;
+      }
       
-      // Redirect to confirmation page or home
-      navigate('/');
-    }, 1500);
+      // Create booking in Supabase
+      const bookingDetails: BookingDetails = {
+        userId: user?.id,
+        serviceId: service.id,
+        date,
+        time,
+        name,
+        address,
+        area,
+        pincode,
+        amount: service.rate
+      };
+      
+      const bookingId = await createBooking(bookingDetails, user?.id, selectedOffer);
+      
+      if (bookingId) {
+        toast.success('Booking successful!');
+        // Navigate to a confirmation page or home
+        navigate('/');
+      }
+    } catch (error: any) {
+      console.error('Error creating booking:', error);
+      toast.error(error.message || 'Failed to create booking');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   // Error state
-  if (error) {
+  if (serviceError) {
     return (
       <Container>
         <div className="py-20 text-center">
@@ -141,6 +237,20 @@ const BookingPage = () => {
       </div>
       
       <Container className="mt-8">
+        {!isAuthenticated && (
+          <Card className="mb-6 border-yellow-300 bg-yellow-50">
+            <CardContent className="flex items-start p-4">
+              <AlertTriangle className="text-yellow-600 mr-3 mt-1 flex-shrink-0" />
+              <div>
+                <p className="font-medium text-yellow-800">Please log in to complete your booking</p>
+                <p className="text-sm text-yellow-700 mt-1">
+                  You'll need to <Link to="/login" className="underline font-medium">log in or create an account</Link> to confirm your booking and receive service updates.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Booking Form */}
           <div className="lg:col-span-2">
@@ -202,6 +312,29 @@ const BookingPage = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
+                      <Label htmlFor="area">Area</Label>
+                      <Input 
+                        id="area" 
+                        value={area} 
+                        onChange={(e) => setArea(e.target.value)} 
+                        required 
+                        placeholder="Andheri"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="pincode">Pincode</Label>
+                      <Input 
+                        id="pincode" 
+                        value={pincode} 
+                        onChange={(e) => setPincode(e.target.value)} 
+                        required 
+                        placeholder="400053"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
                       <Label htmlFor="date">Preferred Date</Label>
                       <select 
                         id="date" 
@@ -247,8 +380,8 @@ const BookingPage = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full" disabled={isSubmitting || isLoading}>
-                    {isSubmitting ? 'Submitting...' : 'Confirm Booking'}
+                  <Button type="submit" className="w-full" disabled={isSubmitting || isServiceLoading}>
+                    {isSubmitting ? 'Processing...' : isAuthenticated ? 'Confirm Booking' : 'Continue to Login'}
                   </Button>
                 </CardFooter>
               </form>
@@ -262,7 +395,7 @@ const BookingPage = () => {
                 <CardTitle>Service Summary</CardTitle>
               </CardHeader>
               <CardContent>
-                {isLoading ? (
+                {isServiceLoading ? (
                   <div className="animate-pulse space-y-3">
                     <div className="h-6 bg-gray-200 rounded w-3/4"></div>
                     <div className="h-4 bg-gray-200 rounded w-full"></div>
@@ -300,11 +433,62 @@ const BookingPage = () => {
                       </div>
                     </div>
                     
-                    <div className="border-t border-gray-200 mt-4 pt-4">
-                      <div className="flex justify-between items-center text-lg font-semibold">
-                        <span>Total</span>
-                        <span>₹{service.rate}</span>
+                    {isAuthenticated && offers.length > 0 && (
+                      <div className="mt-6 border-t border-gray-200 pt-4">
+                        <h4 className="text-sm font-medium mb-3 flex items-center">
+                          <Gift className="w-4 h-4 mr-1 text-green-600" />
+                          Available Offers
+                        </h4>
+                        <div className="space-y-2">
+                          <div 
+                            className={`p-2 border rounded-md cursor-pointer transition ${
+                              selectedOffer === null ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                            }`}
+                            onClick={() => handleOfferSelect(null)}
+                          >
+                            <p className="font-medium">No Offer</p>
+                            <p className="text-xs text-fixhub-dark-gray">Regular price</p>
+                          </div>
+                          
+                          {offers.map(offer => (
+                            <div 
+                              key={offer.id}
+                              className={`p-2 border rounded-md cursor-pointer transition ${
+                                selectedOffer?.id === offer.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                              }`}
+                              onClick={() => handleOfferSelect(offer)}
+                            >
+                              <p className="font-medium">{offer.name}</p>
+                              <p className="text-xs text-fixhub-dark-gray">{offer.description}</p>
+                              <p className="text-xs text-green-600 mt-1">
+                                {offer.discount_type === 'Percentage' 
+                                  ? `${offer.discount_value}% off` 
+                                  : `₹${offer.discount_value} off`}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
                       </div>
+                    )}
+                    
+                    <div className="border-t border-gray-200 mt-4 pt-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-fixhub-dark-gray">Original Price</span>
+                        <span>₹{originalAmount}</span>
+                      </div>
+                      
+                      {discountValue > 0 && (
+                        <div className="flex justify-between items-center text-green-600 mt-1">
+                          <span className="text-sm">Discount</span>
+                          <span>- ₹{discountValue}</span>
+                        </div>
+                      )}
+                      
+                      <div className="flex justify-between items-center text-lg font-semibold mt-2 pt-2 border-t border-dashed border-gray-200">
+                        <span>Total</span>
+                        <span>₹{finalAmount}</span>
+                      </div>
+                      
                       <p className="text-xs text-fixhub-dark-gray mt-1">
                         * Final amount may vary based on additional requirements
                       </p>

@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ServicePage from "./pages/ServicePage";
 import BookingPage from "./pages/BookingPage";
+import LoginPage from "./pages/LoginPage";
+import { AuthProvider } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -17,13 +19,16 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/service-page" element={<ServicePage />} />
-          <Route path="/booking" element={<BookingPage />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/service-page" element={<ServicePage />} />
+            <Route path="/booking" element={<BookingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
