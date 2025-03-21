@@ -60,12 +60,18 @@ export const getApplicableOffers = async (
       return [];
     }
     
-    // Filter offers based on user status (new or existing)
-    return data.filter(offer => {
-      if (offer.valid_for === 'All Users') return true;
-      if (offer.valid_for === 'New Users' && isNewUser) return true;
-      return false;
-    });
+    // Filter offers based on user status (new or existing) and properly cast types
+    return data
+      .filter(offer => {
+        if (offer.valid_for === 'All Users') return true;
+        if (offer.valid_for === 'New Users' && isNewUser) return true;
+        return false;
+      })
+      .map(offer => ({
+        ...offer,
+        discount_type: offer.discount_type as 'Percentage' | 'Flat Amount',
+        valid_for: offer.valid_for as 'New Users' | 'All Users'
+      }));
   } catch (error) {
     console.error('Error in getApplicableOffers:', error);
     return [];
