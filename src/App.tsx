@@ -9,6 +9,10 @@ import NotFound from "./pages/NotFound";
 import ServicePage from "./pages/ServicePage";
 import BookingPage from "./pages/BookingPage";
 import LoginPage from "./pages/LoginPage";
+import UserLoginPage from "./pages/UserLoginPage";
+import UserSignupPage from "./pages/UserSignupPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import UserDashboardPage from "./pages/UserDashboardPage";
 import { AuthProvider } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
@@ -25,6 +29,10 @@ const App = () => (
             <Route path="/service-page" element={<ServicePage />} />
             <Route path="/booking" element={<BookingPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/user/login" element={<UserLoginPage />} />
+            <Route path="/user/signup" element={<UserSignupPage />} />
+            <Route path="/user/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/user-dashboard" element={<UserDashboardPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

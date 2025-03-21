@@ -4,10 +4,12 @@ import { Menu, X } from 'lucide-react';
 import Container from './ui/container';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAuthenticated, user } = useAuth();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -42,12 +44,21 @@ const Header = () => {
           </nav>
           
           <div className="flex items-center space-x-3">
-            <Link
-              to="/user/login"
-              className="fixhub-button fixhub-button-ghost px-3 py-2"
-            >
-              Log in
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to="/user-dashboard"
+                className="fixhub-button fixhub-button-ghost px-3 py-2"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/user/login"
+                className="fixhub-button fixhub-button-ghost px-3 py-2"
+              >
+                Log in
+              </Link>
+            )}
             <Link
               to="/service-page"
               className="fixhub-button fixhub-button-primary px-4 py-2 spring-effect"
@@ -82,9 +93,16 @@ const Header = () => {
           <MobileNavLink href="/about-us" onClick={() => setIsMobileMenuOpen(false)}>
             About Us
           </MobileNavLink>
-          <MobileNavLink href="/user/login" onClick={() => setIsMobileMenuOpen(false)}>
-            Log in
-          </MobileNavLink>
+          
+          {isAuthenticated ? (
+            <MobileNavLink href="/user-dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+              Dashboard
+            </MobileNavLink>
+          ) : (
+            <MobileNavLink href="/user/login" onClick={() => setIsMobileMenuOpen(false)}>
+              Log in
+            </MobileNavLink>
+          )}
           
           <Link
             to="/service-page"

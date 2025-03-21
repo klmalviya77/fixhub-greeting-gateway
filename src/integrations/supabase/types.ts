@@ -244,6 +244,39 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          address: string | null
+          area: string | null
+          city: string | null
+          created_at: string
+          id: string
+          name: string
+          pincode: string | null
+          role: string | null
+        }
+        Insert: {
+          address?: string | null
+          area?: string | null
+          city?: string | null
+          created_at?: string
+          id: string
+          name: string
+          pincode?: string | null
+          role?: string | null
+        }
+        Update: {
+          address?: string | null
+          area?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          pincode?: string | null
+          role?: string | null
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           id: string
