@@ -97,7 +97,7 @@ const BookingPage = () => {
     enabled: !!serviceId
   });
 
-  // Fetch applicable offers
+  // Fetch applicable offers (only if authenticated)
   const { 
     data: offers = [], 
     isLoading: isOffersLoading 
@@ -105,7 +105,7 @@ const BookingPage = () => {
     queryKey: ['offers', serviceId, isAuthenticated],
     queryFn: async () => {
       if (!serviceId) return [];
-      // Assume new user if they're newly registered
+      // Check if user is newly registered (if authenticated)
       const isNewUser = !!user && new Date(user.created_at).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000;
       return getApplicableOffers(serviceId, isNewUser);
     },
@@ -162,7 +162,7 @@ const BookingPage = () => {
         return;
       }
       
-      // Create booking in Supabase
+      // Create booking in Supabase (only for authenticated users)
       const bookingDetails: BookingDetails = {
         userId: user?.id,
         serviceId: service.id,

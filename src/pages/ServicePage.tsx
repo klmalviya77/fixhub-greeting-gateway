@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
 import Container from '@/components/ui/container';
 
-// Import the new components
+// Import the components
 import ServicePageHeader from '@/components/services/ServicePageHeader';
 import SearchBar from '@/components/services/SearchBar';
 import CategoryTabs from '@/components/services/CategoryTabs';
