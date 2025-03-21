@@ -39,6 +39,7 @@ const ServicePage = () => {
   } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
+      console.log('Fetching categories...');
       const { data, error } = await supabase
         .from('categories')
         .select('id, name')
@@ -49,6 +50,7 @@ const ServicePage = () => {
         throw new Error(error.message);
       }
       
+      console.log('Categories fetched:', data);
       return data || [];
     }
   });
@@ -59,6 +61,7 @@ const ServicePage = () => {
   // Set active category when categories load if not already set
   useEffect(() => {
     if (!categoryId && categories.length > 0 && !categoriesLoading) {
+      console.log('Setting initial category to:', categories[0].id);
       setSearchParams({ category: categories[0].id });
     }
   }, [categories, categoriesLoading, categoryId, setSearchParams]);
@@ -71,8 +74,12 @@ const ServicePage = () => {
   } = useQuery({
     queryKey: ['services', activeCategory],
     queryFn: async () => {
-      if (!activeCategory) return [];
+      if (!activeCategory) {
+        console.log('No active category yet, skipping service fetch');
+        return [];
+      }
       
+      console.log('Fetching services for category:', activeCategory);
       const { data, error } = await supabase
         .from('services')
         .select('*')
@@ -83,6 +90,7 @@ const ServicePage = () => {
         throw new Error(error.message);
       }
       
+      console.log('Services fetched:', data);
       return data || [];
     },
     enabled: !!activeCategory
@@ -133,6 +141,9 @@ const ServicePage = () => {
         <div className="py-20 text-center">
           <h2 className="text-2xl font-semibold text-red-600 mb-4">Error Loading Categories</h2>
           <p className="text-fixhub-dark-gray">We encountered an issue while loading service categories.</p>
+          <pre className="mt-4 p-4 bg-gray-100 rounded text-left text-sm overflow-auto">
+            {JSON.stringify(categoriesError, null, 2)}
+          </pre>
         </div>
       </Container>
     );
@@ -144,6 +155,9 @@ const ServicePage = () => {
         <div className="py-20 text-center">
           <h2 className="text-2xl font-semibold text-red-600 mb-4">Error Loading Services</h2>
           <p className="text-fixhub-dark-gray">We encountered an issue while loading services for this category.</p>
+          <pre className="mt-4 p-4 bg-gray-100 rounded text-left text-sm overflow-auto">
+            {JSON.stringify(servicesError, null, 2)}
+          </pre>
         </div>
       </Container>
     );
@@ -237,8 +251,8 @@ const ServicePage = () => {
                   onClick={() => handleCategoryClick(category.id)}
                   className={`px-6 py-2 rounded-full font-medium transition-colors ${
                     activeCategory === category.id
-                      ? 'bg-fixhub-blue text-white'
-                      : 'bg-white text-fixhub-dark-gray hover:bg-gray-100'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-100'
                   }`}
                 >
                   {category.name}
@@ -252,7 +266,7 @@ const ServicePage = () => {
         {servicesLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white rounded-xl shadow-card p-6 animate-pulse">
+              <div key={i} className="bg-white rounded-xl shadow-md p-6 animate-pulse">
                 <div className="h-7 bg-gray-200 rounded mb-4 w-3/4"></div>
                 <div className="h-4 bg-gray-200 rounded mb-2 w-full"></div>
                 <div className="h-4 bg-gray-200 rounded mb-2 w-5/6"></div>
@@ -266,9 +280,9 @@ const ServicePage = () => {
             ))}
           </div>
         ) : services.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-card p-10 text-center">
+          <div className="bg-white rounded-xl shadow-md p-10 text-center">
             <h3 className="text-xl font-semibold mb-2">No Services Available</h3>
-            <p className="text-fixhub-dark-gray mb-4">
+            <p className="text-gray-500 mb-4">
               There are currently no services available in this category.
             </p>
           </div>
@@ -278,17 +292,17 @@ const ServicePage = () => {
               <div
                 id={`service-${service.id}`}
                 key={service.id}
-                className="bg-white rounded-xl shadow-card p-6 transition-all duration-300 hover:shadow-elevated"
+                className="bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-lg"
               >
                 <h3 className="text-xl font-semibold mb-3">{service.name}</h3>
-                <p className="text-fixhub-dark-gray mb-6">{service.description}</p>
+                <p className="text-gray-600 mb-6">{service.description}</p>
                 
                 <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center text-fixhub-dark-gray">
+                  <div className="flex items-center text-gray-700">
                     <IndianRupee className="w-4 h-4 mr-1" />
                     <span className="font-medium">{service.rate}</span>
                   </div>
-                  <div className="flex items-center text-fixhub-dark-gray">
+                  <div className="flex items-center text-gray-700">
                     <Clock className="w-4 h-4 mr-1" />
                     <span>{service.duration} min</span>
                   </div>
@@ -296,7 +310,7 @@ const ServicePage = () => {
                 
                 <button
                   onClick={() => handleBookService(service.id)}
-                  className="w-full bg-fixhub-blue text-white font-medium py-2 rounded-lg hover:bg-fixhub-blue-dark transition-colors"
+                  className="w-full bg-blue-500 text-white font-medium py-2 rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   Book Now
                 </button>
