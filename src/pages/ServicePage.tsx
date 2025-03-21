@@ -42,18 +42,23 @@ const ServicePage = () => {
     queryKey: ['categories'],
     queryFn: async () => {
       console.log('Fetching categories...');
-      const { data, error } = await supabase
-        .from('categories')
-        .select('id, name')
-        .order('name');
-      
-      if (error) {
-        console.error('Error fetching categories:', error);
-        throw new Error(error.message);
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('id, name')
+          .order('name');
+        
+        if (error) {
+          console.error('Error fetching categories:', error);
+          throw new Error(error.message);
+        }
+        
+        console.log('Categories fetched successfully:', data);
+        return data || [];
+      } catch (error) {
+        console.error('Exception in categories query:', error);
+        throw error;
       }
-      
-      console.log('Categories fetched:', data);
-      return data || [];
     }
   });
   
@@ -82,18 +87,23 @@ const ServicePage = () => {
       }
       
       console.log('Fetching services for category:', activeCategory);
-      const { data, error } = await supabase
-        .from('services')
-        .select('*')
-        .eq('category_id', activeCategory);
-      
-      if (error) {
-        console.error('Error fetching services:', error);
-        throw new Error(error.message);
+      try {
+        const { data, error } = await supabase
+          .from('services')
+          .select('*')
+          .eq('category_id', activeCategory);
+        
+        if (error) {
+          console.error('Error fetching services:', error);
+          throw new Error(error.message);
+        }
+        
+        console.log('Services fetched successfully:', data);
+        return data || [];
+      } catch (error) {
+        console.error('Exception in services query:', error);
+        throw error;
       }
-      
-      console.log('Services fetched:', data);
-      return data || [];
     },
     enabled: !!activeCategory
   });
