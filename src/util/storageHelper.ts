@@ -27,18 +27,10 @@ export const ensureTechnicianDocumentsBucket = async () => {
         return false;
       }
       
-      // Set bucket policy to allow authenticated users to upload
-      const { error: policyError } = await supabase.storage.from('technician-documents').createPolicy('authenticated-upload', {
-        name: 'authenticated-upload',
-        definition: 'authenticated',
-        type: 'INSERT'
-      });
-      
-      if (policyError) {
-        console.error('Error creating bucket policy:', policyError);
-      }
-      
       console.log('Created technician-documents bucket successfully');
+      
+      // Note: Bucket policies now need to be managed in the Supabase dashboard
+      // or via SQL directly, not through the JS client
     }
     
     return true;

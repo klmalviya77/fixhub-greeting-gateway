@@ -27,7 +27,7 @@ const TechnicianDashboardPage = () => {
     return null; // Will redirect via useEffect
   }
 
-  const isPending = technician.status === 'Pending';
+  const isPending = technician.verification_status === 'Pending';
 
   return (
     <div className="bg-gray-50 min-h-screen py-12">
