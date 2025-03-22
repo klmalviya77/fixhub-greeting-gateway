@@ -1,41 +1,47 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-// Check if the technician-documents bucket exists, and create it if it doesn't
+/**
+ * Ensures that a bucket for technician documents exists
+ * Creates it if it doesn't exist
+ */
 export const ensureTechnicianDocumentsBucket = async () => {
   try {
-    // List all buckets to check if technician-documents exists
-    const { data: buckets, error } = await supabase.storage.listBuckets();
-    
-    if (error) {
-      console.error('Error checking storage buckets:', error);
-      return false;
+    // Check if the bucket already exists
+    const { data: buckets, error: getBucketsError } = await supabase
+      .storage
+      .listBuckets();
+
+    if (getBucketsError) {
+      console.error("Error checking for technician-documents bucket:", getBucketsError);
+      throw getBucketsError;
     }
-    
+
+    // If the bucket doesn't exist, create it
     const bucketExists = buckets.some(bucket => bucket.name === 'technician-documents');
     
     if (!bucketExists) {
-      // Create the bucket
-      const { error: createError } = await supabase.storage.createBucket('technician-documents', {
-        public: false, // Set to true if you want all files to be publicly accessible
-        fileSizeLimit: 52428800, // 50MB in bytes
-        allowedMimeTypes: ['image/*', 'application/pdf']
-      });
-      
-      if (createError) {
-        console.error('Error creating technician-documents bucket:', createError);
-        return false;
+      const { error: createBucketError } = await supabase
+        .storage
+        .createBucket('technician-documents', {
+          public: false,
+          fileSizeLimit: 5242880, // 5MB
+        });
+
+      if (createBucketError) {
+        console.error("Error creating technician-documents bucket:", createBucketError);
+        throw createBucketError;
       }
       
-      console.log('Created technician-documents bucket successfully');
-      
-      // Note: Bucket policies now need to be managed in the Supabase dashboard
-      // or via SQL directly, not through the JS client
+      // Note: You cannot directly create policies via the JavaScript client
+      // Policies would need to be managed through the Supabase dashboard or SQL commands
     }
-    
+
     return true;
   } catch (error) {
-    console.error('Unexpected error setting up storage bucket:', error);
-    return false;
+    console.error("Error ensuring technician-documents bucket:", error);
+    toast.error("Failed to initialize storage for documents");
+    throw error;
   }
 };

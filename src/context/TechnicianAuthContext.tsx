@@ -137,9 +137,9 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
       // Create storage bucket if needed
       await ensureTechnicianDocumentsBucket();
       
-      // Remove experience from the data we'll send to the database
-      // since it's not in the schema
-      const { experience, ...technicianDbData } = technicianData;
+      // Remove experience and password from the data we'll send to the database
+      // since these fields are not in the schema
+      const { experience, password, ...technicianDbData } = technicianData;
       
       // Insert directly instead of using the RPC
       const { data, error } = await supabase
