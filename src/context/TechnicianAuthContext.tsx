@@ -4,27 +4,25 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+// Update the Technician interface to match our actual database schema
 interface Technician {
   id: string;
   name: string;
   email: string;
-  role: string;
-  status: string;
-}
-
-interface AuthResponse {
-  data: {
-    id?: string;
-    name?: string;
-    email?: string;
-    role?: string;
-    status?: string;
-    authenticated?: boolean;
-    success?: boolean;
-    message?: string;
-    technician_id?: string;
+  phone: string;
+  address?: string | null;
+  area: string;
+  pincode: string;
+  category_id?: string | null;
+  experience?: string;
+  availability?: boolean;
+  rating?: number | null;
+  // Add custom fields we'll manage in our app
+  verification_status?: 'Pending' | 'Verified' | 'Rejected';
+  documents?: {
+    aadhar?: string;
+    certificates?: string[];
   };
-  error: Error | null;
 }
 
 type TechnicianAuthContextType = {
@@ -88,10 +86,10 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
     try {
       setLoading(true);
       
-      // Use a regular function call rather than rpc since we're having issues
+      // Fetch technician data by email
       const { data, error } = await supabase
         .from('technicians')
-        .select('id, name, email, role, status')
+        .select('*')
         .eq('email', email)
         .single();
       
@@ -105,15 +103,21 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
         throw new Error('Invalid credentials');
       }
       
+      // Add verification_status to the technician object
+      const technicianWithStatus: Technician = {
+        ...data,
+        verification_status: 'Pending' // Default status or can be fetched from a separate table
+      };
+      
       // Store technician session in local storage
-      localStorage.setItem('technicianSession', JSON.stringify(data));
-      setTechnician(data as Technician);
+      localStorage.setItem('technicianSession', JSON.stringify(technicianWithStatus));
+      setTechnician(technicianWithStatus);
       setIsAuthenticated(true);
       
       toast.success('Logged in successfully!');
       
       // Check status and show appropriate message
-      if (data.status === 'Pending') {
+      if (technicianWithStatus.verification_status === 'Pending') {
         toast.info('Your account is still pending verification.');
       }
       
@@ -144,8 +148,8 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
             category_id: technicianData.category_id,
             pincode: technicianData.pincode,
             area: technicianData.area,
-            status: 'Pending',
-            role: 'technician'
+            // We will maintain verification status in our application logic
+            // or in a separate metadata table
           }
         ])
         .select('id')
@@ -205,17 +209,16 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
     try {
       setLoading(true);
       
-      // Update technician status to pending (already default, but just in case)
-      const { error } = await supabase
-        .from('technicians')
-        .update({ 
-          status: 'Pending' 
-        })
-        .eq('id', technicianId);
+      // In a real app, we would update a status field in a separate verification table
+      // or have a metadata field. Since we don't have a status field in the DB,
+      // we'll just simulate it with session storage and a toast message
       
-      if (error) {
-        toast.error(error.message);
-        throw error;
+      // Get current session data
+      const sessionStr = localStorage.getItem('technicianSession');
+      if (sessionStr) {
+        const session = JSON.parse(sessionStr);
+        session.verification_status = 'Pending';
+        localStorage.setItem('technicianSession', JSON.stringify(session));
       }
       
       // In a real app, you would send a WhatsApp message to admin here
