@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTechnicianAuth, TechnicianSignUpData } from '@/context/TechnicianAuthContext';
@@ -40,7 +39,7 @@ const TechnicianSignupPage = () => {
 
   const [uploads, setUploads] = useState<UploadState>({
     aadhar: { file: null, url: null, uploading: false },
-    certificates: { files: [], urls: [], uploading: false }
+    certificates: { files: [], urls: string[], uploading: false }
   });
 
   const [confirmPassword, setConfirmPassword] = useState('');
