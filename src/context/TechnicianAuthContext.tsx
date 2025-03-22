@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { ensureTechnicianDocumentsBucket } from '@/util/storageHelper';
 
 // Update the Technician interface to match our actual database schema
 interface Technician {
@@ -14,15 +15,14 @@ interface Technician {
   area: string;
   pincode: string;
   category_id?: string | null;
-  experience?: string;
-  availability?: boolean;
-  rating?: number | null;
+  // Note: experience is not in the database schema, we'll store it in session
   // Add custom fields we'll manage in our app
   verification_status?: 'Pending' | 'Verified' | 'Rejected';
   documents?: {
     aadhar?: string;
     certificates?: string[];
   };
+  experience?: string; // We'll keep this in our app logic but not store in DB
 }
 
 type TechnicianAuthContextType = {
@@ -134,24 +134,17 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
     try {
       setLoading(true);
       
+      // Create storage bucket if needed
+      await ensureTechnicianDocumentsBucket();
+      
+      // Remove experience from the data we'll send to the database
+      // since it's not in the schema
+      const { experience, ...technicianDbData } = technicianData;
+      
       // Insert directly instead of using the RPC
       const { data, error } = await supabase
         .from('technicians')
-        .insert([
-          {
-            name: technicianData.name,
-            phone: technicianData.phone,
-            email: technicianData.email,
-            password: technicianData.password, // Note: In production, this should be hashed
-            address: technicianData.address,
-            experience: technicianData.experience,
-            category_id: technicianData.category_id,
-            pincode: technicianData.pincode,
-            area: technicianData.area,
-            // We will maintain verification status in our application logic
-            // or in a separate metadata table
-          }
-        ])
+        .insert([technicianDbData])
         .select('id')
         .single();
       
@@ -159,6 +152,17 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
         toast.error(error.message);
         throw error;
       }
+      
+      // Store experience in session storage since it's not in the DB
+      const technicianWithMetadata = {
+        ...technicianDbData,
+        id: data.id,
+        experience, // Add back the experience field for our client-side use
+        verification_status: 'Pending' // Default status
+      };
+      
+      // Save this to localStorage for later
+      localStorage.setItem('technicianExperience_' + data.id, experience);
       
       toast.success('Registration successful! Please upload your documents.');
       
