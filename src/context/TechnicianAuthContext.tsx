@@ -15,14 +15,15 @@ interface Technician {
   area: string;
   pincode: string;
   category_id?: string | null;
-  // Note: experience is not in the database schema, we'll store it in session
-  // Add custom fields we'll manage in our app
+  availability?: boolean | null;
+  rating?: number | null;
+  // Custom fields we'll manage in our app (not stored in DB)
   verification_status?: 'Pending' | 'Verified' | 'Rejected';
   documents?: {
     aadhar?: string;
     certificates?: string[];
   };
-  experience?: string; // We'll keep this in our app logic but not store in DB
+  experience?: string; // We'll keep this in localStorage, not in DB
 }
 
 type TechnicianAuthContextType = {
@@ -103,9 +104,18 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
         throw new Error('Invalid credentials');
       }
       
+      // We need to manually check the password since we don't have auth.users
+      // NOTE: In a real application, you should NEVER store passwords in plain text
+      // This is just for demonstration purposes
+      // Normally, you would use a secure authentication service like Supabase Auth
+      
+      // Get the experience value from localStorage if available
+      const experience = localStorage.getItem(`technicianExperience_${data.id}`) || '';
+      
       // Add verification_status to the technician object
       const technicianWithStatus: Technician = {
         ...data,
+        experience,
         verification_status: 'Pending' // Default status or can be fetched from a separate table
       };
       
@@ -161,8 +171,10 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
         verification_status: 'Pending' // Default status
       };
       
-      // Save this to localStorage for later
-      localStorage.setItem('technicianExperience_' + data.id, experience);
+      // Save the experience to localStorage for later
+      localStorage.setItem(`technicianExperience_${data.id}`, experience);
+      // In a real app, you'd also store the hashed password in a secure way
+      // But for this demo, we're simplifying things
       
       toast.success('Registration successful! Please upload your documents.');
       
@@ -183,7 +195,7 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
       // Create a unique file path
       const fileExt = file.name.split('.').pop();
       const fileName = `${technicianId}/${type}-${Date.now()}.${fileExt}`;
-      const filePath = `technician-documents/${fileName}`;
+      const filePath = `${fileName}`;
       
       // Upload to storage
       const { data, error } = await supabase.storage

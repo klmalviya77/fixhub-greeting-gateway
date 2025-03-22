@@ -25,7 +25,7 @@ export const ensureTechnicianDocumentsBucket = async () => {
       const { error: createBucketError } = await supabase
         .storage
         .createBucket('technician-documents', {
-          public: false,
+          public: true, // Changed to true to make documents publicly accessible
           fileSizeLimit: 5242880, // 5MB
         });
 
@@ -34,6 +34,7 @@ export const ensureTechnicianDocumentsBucket = async () => {
         throw createBucketError;
       }
       
+      console.log("Created technician-documents bucket successfully");
       // Note: You cannot directly create policies via the JavaScript client
       // Policies would need to be managed through the Supabase dashboard or SQL commands
     }
