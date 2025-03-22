@@ -39,7 +39,7 @@ const TechnicianSignupPage = () => {
 
   const [uploads, setUploads] = useState<UploadState>({
     aadhar: { file: null, url: null, uploading: false },
-    certificates: { files: [], urls: string[], uploading: false }
+    certificates: { files: [], urls: [], uploading: false }
   });
 
   const [confirmPassword, setConfirmPassword] = useState('');
