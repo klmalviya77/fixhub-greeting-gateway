@@ -17,8 +17,8 @@ interface Technician {
   category_id?: string | null;
   availability?: boolean | null;
   rating?: number | null;
+  verification_status: 'Pending' | 'Verified' | 'Rejected';
   // Custom fields we'll manage in our app (not stored in DB)
-  verification_status?: 'Pending' | 'Verified' | 'Rejected';
   documents?: {
     aadhar?: string;
     certificates?: string[];
@@ -116,7 +116,8 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
       const technicianWithStatus: Technician = {
         ...data,
         experience,
-        verification_status: 'Pending' // Default status or can be fetched from a separate table
+        // Use the verification_status from the database now that it exists
+        verification_status: data.verification_status || 'Pending'
       };
       
       // Store technician session in local storage
@@ -154,7 +155,10 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
       // Insert directly instead of using the RPC
       const { data, error } = await supabase
         .from('technicians')
-        .insert([technicianDbData])
+        .insert([{
+          ...technicianDbData,
+          verification_status: 'Pending' // Explicitly set the status on signup
+        }])
         .select('id')
         .single();
       
@@ -168,7 +172,7 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
         ...technicianDbData,
         id: data.id,
         experience, // Add back the experience field for our client-side use
-        verification_status: 'Pending' // Default status
+        verification_status: 'Pending' // Explicitly set status
       };
       
       // Save the experience to localStorage for later

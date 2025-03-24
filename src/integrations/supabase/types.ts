@@ -364,6 +364,7 @@ export type Database = {
           phone: string
           pincode: string
           rating: number | null
+          verification_status: string
         }
         Insert: {
           address?: string | null
@@ -377,6 +378,7 @@ export type Database = {
           phone: string
           pincode: string
           rating?: number | null
+          verification_status?: string
         }
         Update: {
           address?: string | null
@@ -390,6 +392,7 @@ export type Database = {
           phone?: string
           pincode?: string
           rating?: number | null
+          verification_status?: string
         }
         Relationships: [
           {
