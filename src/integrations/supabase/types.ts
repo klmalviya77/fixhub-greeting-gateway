@@ -206,6 +206,60 @@ export type Database = {
           },
         ]
       }
+      partners: {
+        Row: {
+          aadhar_card: string | null
+          certificates: string[] | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          password: string
+          phone_number: string
+          role: string
+          services_offered: string[] | null
+          shop_address: string
+          shop_area: string
+          shop_name: string
+          shop_pincode: string
+          status: string
+        }
+        Insert: {
+          aadhar_card?: string | null
+          certificates?: string[] | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          password: string
+          phone_number: string
+          role?: string
+          services_offered?: string[] | null
+          shop_address: string
+          shop_area: string
+          shop_name: string
+          shop_pincode: string
+          status?: string
+        }
+        Update: {
+          aadhar_card?: string | null
+          certificates?: string[] | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          password?: string
+          phone_number?: string
+          role?: string
+          services_offered?: string[] | null
+          shop_address?: string
+          shop_area?: string
+          shop_name?: string
+          shop_pincode?: string
+          status?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
