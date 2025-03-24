@@ -116,8 +116,8 @@ export function TechnicianAuthProvider({ children }: { children: React.ReactNode
       const technicianWithStatus: Technician = {
         ...data,
         experience,
-        // Use the verification_status from the database now that it exists
-        verification_status: data.verification_status || 'Pending'
+        // Use the verification_status from the database with a type assertion
+        verification_status: (data.verification_status as 'Pending' | 'Verified' | 'Rejected') || 'Pending'
       };
       
       // Store technician session in local storage
