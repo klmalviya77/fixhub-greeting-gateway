@@ -25,50 +25,54 @@ import PartnerDashboardPage from "./pages/PartnerDashboardPage";
 import { AuthProvider } from "./context/AuthContext";
 import { TechnicianAuthProvider } from "./context/TechnicianAuthContext";
 import { PartnerAuthProvider } from "./context/PartnerAuthContext";
+import { useState } from "react";
 
-const queryClient = new QueryClient();
+function App() {
+  // Create a client
+  const [queryClient] = useState(() => new QueryClient());
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <TechnicianAuthProvider>
-            <PartnerAuthProvider>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/service-page" element={<ServicePage />} />
-                <Route path="/booking" element={<BookingPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/user/login" element={<UserLoginPage />} />
-                <Route path="/user/signup" element={<UserSignupPage />} />
-                <Route path="/user/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/user-dashboard" element={<UserDashboardPage />} />
-                
-                {/* Technician Routes */}
-                <Route path="/technician/login" element={<TechnicianLoginPage />} />
-                <Route path="/technician/signup" element={<TechnicianSignupPage />} />
-                <Route path="/technician/verification-pending" element={<TechnicianVerificationPendingPage />} />
-                <Route path="/technician-dashboard" element={<TechnicianDashboardPage />} />
-                
-                {/* Partner Routes */}
-                <Route path="/partner/login" element={<PartnerLoginPage />} />
-                <Route path="/partner/signup" element={<PartnerSignupPage />} />
-                <Route path="/partner/forgot-password" element={<PartnerForgotPasswordPage />} />
-                <Route path="/partner/verification-pending" element={<PartnerVerificationPendingPage />} />
-                <Route path="/partner-dashboard" element={<PartnerDashboardPage />} />
-                
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </PartnerAuthProvider>
-          </TechnicianAuthProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <TechnicianAuthProvider>
+              <PartnerAuthProvider>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/service-page" element={<ServicePage />} />
+                  <Route path="/booking" element={<BookingPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/user/login" element={<UserLoginPage />} />
+                  <Route path="/user/signup" element={<UserSignupPage />} />
+                  <Route path="/user/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/user-dashboard" element={<UserDashboardPage />} />
+                  
+                  {/* Technician Routes */}
+                  <Route path="/technician/login" element={<TechnicianLoginPage />} />
+                  <Route path="/technician/signup" element={<TechnicianSignupPage />} />
+                  <Route path="/technician/verification-pending" element={<TechnicianVerificationPendingPage />} />
+                  <Route path="/technician-dashboard" element={<TechnicianDashboardPage />} />
+                  
+                  {/* Partner Routes */}
+                  <Route path="/partner/login" element={<PartnerLoginPage />} />
+                  <Route path="/partner/signup" element={<PartnerSignupPage />} />
+                  <Route path="/partner/forgot-password" element={<PartnerForgotPasswordPage />} />
+                  <Route path="/partner/verification-pending" element={<PartnerVerificationPendingPage />} />
+                  <Route path="/partner-dashboard" element={<PartnerDashboardPage />} />
+                  
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </PartnerAuthProvider>
+            </TechnicianAuthProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
