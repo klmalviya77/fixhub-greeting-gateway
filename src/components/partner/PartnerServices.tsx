@@ -84,7 +84,7 @@ interface ServiceFormValues {
   category_id: string;
 }
 
-// Define the schema for the form validation
+// Define the schema for the form validation - decoupled from the interface
 const serviceFormSchema = z.object({
   name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
@@ -99,6 +99,7 @@ export function PartnerServices() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   
+  // Create forms using the interface directly, not derived from schema
   const addForm = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
@@ -121,6 +122,7 @@ export function PartnerServices() {
     },
   });
 
+  
   // Fetch categories data
   const { data: categories } = useQuery({
     queryKey: ['categories'],
@@ -260,6 +262,7 @@ export function PartnerServices() {
     const category = categories?.find(cat => cat.id === categoryId);
     return category?.name || 'Unknown Category';
   };
+  
   
   return (
     <div className="space-y-6">
