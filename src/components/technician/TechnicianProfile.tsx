@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { useTechnicianAuth } from '@/context/TechnicianAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
-import { User, Phone, MapPin, Star, Award, Tool } from 'lucide-react';
+import { User, Phone, MapPin, Star, Award, Wrench } from 'lucide-react';
 
 interface Category {
   id: string;
@@ -94,7 +93,7 @@ export function TechnicianProfile() {
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">Category</p>
                 <div className="flex items-center">
-                  <Tool className="h-4 w-4 mr-2 text-primary" />
+                  <Wrench className="h-4 w-4 mr-2 text-primary" />
                   <p className="font-medium">{getCategoryName(technician.category_id)}</p>
                 </div>
               </div>
