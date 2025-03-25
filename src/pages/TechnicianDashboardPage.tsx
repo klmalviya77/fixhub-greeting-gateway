@@ -1,37 +1,21 @@
 
-import React, { useEffect } from 'react';
-import { useNavigate, Routes, Route } from 'react-router-dom';
-import { useTechnicianAuth } from '@/context/TechnicianAuthContext';
-import { TechnicianDashboardLayout } from '@/components/technician/TechnicianDashboardLayout';
-import { TechnicianHome } from '@/components/technician/TechnicianHome';
-import { TechnicianJobs } from '@/components/technician/TechnicianJobs';
-import { TechnicianEarnings } from '@/components/technician/TechnicianEarnings';
-import { TechnicianProfile } from '@/components/technician/TechnicianProfile';
+import React from 'react';
 
 const TechnicianDashboardPage = () => {
-  const { technician, isAuthenticated } = useTechnicianAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Redirect to login if not authenticated
-    if (!isAuthenticated) {
-      navigate('/technician/login');
-    }
-  }, [isAuthenticated, navigate]);
-
-  if (!isAuthenticated || !technician) {
-    return null; // Will redirect via useEffect
-  }
-
   return (
-    <Routes>
-      <Route element={<TechnicianDashboardLayout />}>
-        <Route index element={<TechnicianHome />} />
-        <Route path="jobs" element={<TechnicianJobs />} />
-        <Route path="earnings" element={<TechnicianEarnings />} />
-        <Route path="profile" element={<TechnicianProfile />} />
-      </Route>
-    </Routes>
+    <div>
+      <h1 className="text-2xl font-bold mb-6">Technician Dashboard</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">Upcoming Jobs</h2>
+          <p className="text-gray-500">You have no upcoming jobs</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">Earnings</h2>
+          <p className="text-gray-500">No earnings history</p>
+        </div>
+      </div>
+    </div>
   );
 };
 

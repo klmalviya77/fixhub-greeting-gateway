@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,20 +16,21 @@ import UserBookingsPage from './pages/UserBookingsPage';
 import UserProfilePage from './pages/UserProfilePage';
 import TechnicianSignupPage from './pages/TechnicianSignupPage';
 import TechnicianLoginPage from './pages/TechnicianLoginPage';
-import TechnicianDashboardLayout from './components/technician/TechnicianDashboardLayout';
+import { TechnicianDashboardLayout } from './components/technician/TechnicianDashboardLayout';
 import TechnicianDashboardPage from './pages/TechnicianDashboardPage';
 import TechnicianBookingsPage from './pages/TechnicianBookingsPage';
 import TechnicianProfilePage from './pages/TechnicianProfilePage';
-import { TooltipProvider } from "@/components/ui/tooltip"
+import { TooltipProvider } from "@/components/ui/tooltip";
 import PartnerSignupPage from './pages/PartnerSignupPage';
 import PartnerLoginPage from './pages/PartnerLoginPage';
 import PartnerDashboardPage from './pages/PartnerDashboardPage';
 
-// Import new partner dashboard components
+// Import partner dashboard components
 import { PartnerDashboardLayout } from './components/partner/PartnerDashboardLayout';
 import PartnerServicesPage from './pages/PartnerServicesPage';
 import PartnerEarningsPage from './pages/PartnerEarningsPage';
 import PartnerProfilePage from './pages/PartnerProfilePage';
+
 const queryClient = new QueryClient();
 
 function App() {
