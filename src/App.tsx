@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
-
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -30,7 +29,6 @@ import { PartnerDashboardLayout } from './components/partner/PartnerDashboardLay
 import PartnerServicesPage from './pages/PartnerServicesPage';
 import PartnerEarningsPage from './pages/PartnerEarningsPage';
 import PartnerProfilePage from './pages/PartnerProfilePage';
-
 const queryClient = new QueryClient();
 
 function App() {
