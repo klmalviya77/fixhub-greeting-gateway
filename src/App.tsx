@@ -54,7 +54,7 @@ function App() {
                   <Route path="/technician/login" element={<TechnicianLoginPage />} />
                   <Route path="/technician/signup" element={<TechnicianSignupPage />} />
                   <Route path="/technician/verification-pending" element={<TechnicianVerificationPendingPage />} />
-                  <Route path="/technician-dashboard" element={<TechnicianDashboardPage />} />
+                  <Route path="/technician-dashboard/*" element={<TechnicianDashboardPage />} />
                   
                   {/* Partner Routes */}
                   <Route path="/partner/login" element={<PartnerLoginPage />} />
