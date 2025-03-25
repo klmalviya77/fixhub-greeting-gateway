@@ -75,8 +75,6 @@ interface Service {
   created_at?: string;
 }
 
-type ServiceFormValues = z.infer<typeof serviceFormSchema>;
-
 const serviceFormSchema = z.object({
   name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
@@ -84,6 +82,9 @@ const serviceFormSchema = z.object({
   duration: z.coerce.number().positive({ message: "Duration must be a positive number" }),
   category_id: z.string().uuid({ message: "Please select a valid category" }),
 });
+
+// Define the type separately to avoid circular reference issues
+type ServiceFormValues = z.infer<typeof serviceFormSchema>;
 
 export function PartnerServices() {
   const { partner } = usePartnerAuth();
@@ -134,7 +135,7 @@ export function PartnerServices() {
   const { data: services, isLoading } = useQuery({
     queryKey: ['partner-services', partner?.id],
     queryFn: async () => {
-      if (!partner?.id) return [];
+      if (!partner?.id) return [] as Service[];
       
       const { data, error } = await supabase
         .from('services')
@@ -146,7 +147,7 @@ export function PartnerServices() {
         throw error;
       }
       
-      // Cast the data to the correct type with the partner_id property
+      // Transform the data to ensure it has partner_id
       return (data || []).map(item => ({
         ...item,
         partner_id: partner.id
@@ -194,9 +195,18 @@ export function PartnerServices() {
     mutationFn: async (values: ServiceFormValues) => {
       if (!editingService?.id) throw new Error("No service selected for update");
       
+      // Ensure all required fields are included and not optional
+      const updateData = {
+        name: values.name,
+        description: values.description,
+        rate: values.rate,
+        duration: values.duration,
+        category_id: values.category_id
+      };
+      
       const { data, error } = await supabase
         .from('services')
-        .update(values)
+        .update(updateData)
         .eq('id', editingService.id)
         .select()
         .single();
