@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { usePartnerAuth } from '@/context/PartnerAuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -75,7 +76,16 @@ interface Service {
   created_at?: string;
 }
 
-// Define the schema for the form
+// Define interface for form values explicitly (not derived from schema)
+interface ServiceFormValues {
+  name: string;
+  description: string;
+  rate: number;
+  duration: number;
+  category_id: string;
+}
+
+// Define the schema for the form validation
 const serviceFormSchema = z.object({
   name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
@@ -83,15 +93,6 @@ const serviceFormSchema = z.object({
   duration: z.coerce.number().positive({ message: "Duration must be a positive number" }),
   category_id: z.string().uuid({ message: "Please select a valid category" }),
 });
-
-// Define the type from the schema
-type ServiceFormValues = {
-  name: string;
-  description: string;
-  rate: number;
-  duration: number;
-  category_id: string;
-};
 
 export function PartnerServices() {
   const { partner } = usePartnerAuth();
