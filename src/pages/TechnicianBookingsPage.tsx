@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +7,11 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, IndianRupee, MapPin, Phone, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+
+interface UserProfile {
+  name: string;
+  phone?: string;
+}
 
 interface Booking {
   id: string;
@@ -27,10 +31,7 @@ interface Booking {
     name: string;
     description: string;
   };
-  user_profile: {
-    name: string;
-    phone?: string;
-  } | null;
+  user_profile: UserProfile | null;
   commission: number;
 }
 
@@ -84,11 +85,27 @@ const TechnicianBookingsPage = () => {
         throw error;
       }
 
-      return data as Booking[];
+      // Transform the data to ensure it matches the expected Booking interface
+      return (data || []).map(booking => {
+        // Handle possible errors in the join
+        const safeUserProfile = booking.user_profile && typeof booking.user_profile === 'object' 
+          ? booking.user_profile as UserProfile
+          : null;
+            
+        return {
+          ...booking,
+          user_profile: safeUserProfile,
+          // Ensure these fields exist with safe defaults
+          discount_applied: booking.discount_applied ?? false,
+          discount_value: booking.discount_value ?? 0,
+          commission: booking.commission ?? Math.round((booking.final_amount || booking.amount) * 0.2)
+        } as Booking;
+      });
     },
     enabled: !!technicianId
   });
 
+  
   const updateBookingStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string, status: string }) => {
       const { error } = await supabase
@@ -137,6 +154,7 @@ const TechnicianBookingsPage = () => {
     }
   };
 
+  
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">My Jobs</h1>
@@ -251,7 +269,7 @@ const TechnicianBookingsPage = () => {
                       
                       <div className="text-sm text-blue-600 flex justify-between pt-1">
                         <span>Your Commission:</span>
-                        <span>₹{booking.commission || Math.round(booking.final_amount * 0.2)}</span>
+                        <span>₹{booking.commission}</span>
                       </div>
                     </div>
                   </div>

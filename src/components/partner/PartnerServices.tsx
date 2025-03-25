@@ -72,7 +72,10 @@ interface Service {
   duration: number;
   category_id: string;
   partner_id: string;
+  created_at?: string;
 }
+
+type ServiceFormValues = z.infer<typeof serviceFormSchema>;
 
 const serviceFormSchema = z.object({
   name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
@@ -88,7 +91,7 @@ export function PartnerServices() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   
-  const addForm = useForm<z.infer<typeof serviceFormSchema>>({
+  const addForm = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
       name: "",
@@ -99,7 +102,7 @@ export function PartnerServices() {
     },
   });
 
-  const editForm = useForm<z.infer<typeof serviceFormSchema>>({
+  const editForm = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
       name: "",
@@ -143,24 +146,28 @@ export function PartnerServices() {
         throw error;
       }
       
-      return data as Service[] || [];
+      // Cast the data to the correct type with the partner_id property
+      return (data || []).map(item => ({
+        ...item,
+        partner_id: partner.id
+      })) as Service[];
     },
     enabled: !!partner?.id
   });
   
   // Add service mutation
   const addServiceMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof serviceFormSchema>) => {
+    mutationFn: async (values: ServiceFormValues) => {
       if (!partner?.id) throw new Error("Partner not authenticated");
+      
+      const newService = {
+        ...values,
+        partner_id: partner.id
+      };
       
       const { data, error } = await supabase
         .from('services')
-        .insert([
-          {
-            ...values,
-            partner_id: partner.id
-          }
-        ])
+        .insert([newService])
         .select()
         .single();
         
@@ -184,7 +191,7 @@ export function PartnerServices() {
   
   // Update service mutation
   const updateServiceMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof serviceFormSchema>) => {
+    mutationFn: async (values: ServiceFormValues) => {
       if (!editingService?.id) throw new Error("No service selected for update");
       
       const { data, error } = await supabase
@@ -212,11 +219,11 @@ export function PartnerServices() {
     }
   });
   
-  const handleAddService = (values: z.infer<typeof serviceFormSchema>) => {
+  const handleAddService = (values: ServiceFormValues) => {
     addServiceMutation.mutate(values);
   };
   
-  const handleUpdateService = (values: z.infer<typeof serviceFormSchema>) => {
+  const handleUpdateService = (values: ServiceFormValues) => {
     updateServiceMutation.mutate(values);
   };
   
