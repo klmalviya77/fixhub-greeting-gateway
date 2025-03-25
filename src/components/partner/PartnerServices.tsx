@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { usePartnerAuth } from '@/context/PartnerAuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -76,7 +75,7 @@ interface Service {
   created_at?: string;
 }
 
-// Define interface for form values explicitly (not derived from schema)
+// Define interface for form values explicitly
 interface ServiceFormValues {
   name: string;
   description: string;
