@@ -75,6 +75,7 @@ interface Service {
   created_at?: string;
 }
 
+// Define the schema first
 const serviceFormSchema = z.object({
   name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
@@ -83,7 +84,7 @@ const serviceFormSchema = z.object({
   category_id: z.string().uuid({ message: "Please select a valid category" }),
 });
 
-// Define the type separately to avoid circular reference issues
+// Then define the type from the schema
 type ServiceFormValues = z.infer<typeof serviceFormSchema>;
 
 export function PartnerServices() {
@@ -147,11 +148,7 @@ export function PartnerServices() {
         throw error;
       }
       
-      // Transform the data to ensure it has partner_id
-      return (data || []).map(item => ({
-        ...item,
-        partner_id: partner.id
-      })) as Service[];
+      return data as Service[] || [];
     },
     enabled: !!partner?.id
   });
@@ -161,8 +158,13 @@ export function PartnerServices() {
     mutationFn: async (values: ServiceFormValues) => {
       if (!partner?.id) throw new Error("Partner not authenticated");
       
+      // Create a complete service object with all required fields
       const newService = {
-        ...values,
+        name: values.name,
+        description: values.description,
+        rate: values.rate,
+        duration: values.duration,
+        category_id: values.category_id,
         partner_id: partner.id
       };
       
@@ -195,7 +197,7 @@ export function PartnerServices() {
     mutationFn: async (values: ServiceFormValues) => {
       if (!editingService?.id) throw new Error("No service selected for update");
       
-      // Ensure all required fields are included and not optional
+      // Create a complete update object with all required fields
       const updateData = {
         name: values.name,
         description: values.description,
