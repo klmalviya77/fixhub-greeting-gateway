@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { usePartnerAuth } from '@/context/PartnerAuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -59,6 +58,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
+// Define interfaces separately from schema
 interface Category {
   id: string;
   name: string;
@@ -75,7 +75,7 @@ interface Service {
   created_at?: string;
 }
 
-// Define the schema first
+// Define the schema for the form
 const serviceFormSchema = z.object({
   name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
@@ -84,8 +84,14 @@ const serviceFormSchema = z.object({
   category_id: z.string().uuid({ message: "Please select a valid category" }),
 });
 
-// Then define the type from the schema
-type ServiceFormValues = z.infer<typeof serviceFormSchema>;
+// Define the type from the schema
+type ServiceFormValues = {
+  name: string;
+  description: string;
+  rate: number;
+  duration: number;
+  category_id: string;
+};
 
 export function PartnerServices() {
   const { partner } = usePartnerAuth();
