@@ -58,7 +58,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
-// Define interfaces separately from schema
+// Define interfaces
 interface Category {
   id: string;
   name: string;
@@ -75,7 +75,7 @@ interface Service {
   created_at?: string;
 }
 
-// Explicitly define interface for form values
+// Define the form values interface completely separate from Zod schema
 interface ServiceFormValues {
   name: string;
   description: string;
@@ -84,7 +84,7 @@ interface ServiceFormValues {
   category_id: string;
 }
 
-// Define schema separately, completely decoupled from the interface
+// Define schema separately
 const serviceFormSchema = z.object({
   name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
@@ -93,16 +93,13 @@ const serviceFormSchema = z.object({
   category_id: z.string().uuid({ message: "Please select a valid category" }),
 });
 
-// Create a type based on the schema for form validation
-type ServiceFormSchemaType = z.infer<typeof serviceFormSchema>;
-
 export function PartnerServices() {
   const { partner } = usePartnerAuth();
   const queryClient = useQueryClient();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   
-  // Use the explicit interface for useForm instead of inferring from the schema
+  // Use the explicit interface for form typing, not the schema inference
   const addForm = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
