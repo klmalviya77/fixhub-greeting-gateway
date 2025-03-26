@@ -59,7 +59,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
-// Define interfaces
+// Define interfaces with simple, flat structures
 interface Category {
   id: string;
   name: string;
@@ -76,16 +76,7 @@ interface Service {
   created_at?: string;
 }
 
-// Define schema first
-const serviceFormSchema = z.object({
-  name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
-  description: z.string().min(10, { message: "Description must be at least 10 characters" }),
-  rate: z.coerce.number().positive({ message: "Rate must be a positive number" }),
-  duration: z.coerce.number().positive({ message: "Duration must be a positive number" }),
-  category_id: z.string().uuid({ message: "Please select a valid category" }),
-});
-
-// Simple type alias without using z.infer to avoid deep instantiation
+// Define simple form values type without using z.infer
 type ServiceFormValues = {
   name: string;
   description: string;
@@ -93,6 +84,15 @@ type ServiceFormValues = {
   duration: number;
   category_id: string;
 };
+
+// Define schema separately - not used for type inference
+const serviceFormSchema = z.object({
+  name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
+  description: z.string().min(10, { message: "Description must be at least 10 characters" }),
+  rate: z.coerce.number().positive({ message: "Rate must be a positive number" }),
+  duration: z.coerce.number().positive({ message: "Duration must be a positive number" }),
+  category_id: z.string().uuid({ message: "Please select a valid category" }),
+});
 
 export function PartnerServices() {
   const { partner } = usePartnerAuth();
