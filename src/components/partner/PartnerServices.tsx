@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { usePartnerAuth } from '@/context/PartnerAuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -75,16 +76,7 @@ interface Service {
   created_at?: string;
 }
 
-// Define the form values interface completely separate from Zod schema
-interface ServiceFormValues {
-  name: string;
-  description: string;
-  rate: number;
-  duration: number;
-  category_id: string;
-}
-
-// Define schema separately
+// Define schema first
 const serviceFormSchema = z.object({
   name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
@@ -93,13 +85,22 @@ const serviceFormSchema = z.object({
   category_id: z.string().uuid({ message: "Please select a valid category" }),
 });
 
+// Simple type alias without using z.infer to avoid deep instantiation
+type ServiceFormValues = {
+  name: string;
+  description: string;
+  rate: number;
+  duration: number;
+  category_id: string;
+};
+
 export function PartnerServices() {
   const { partner } = usePartnerAuth();
   const queryClient = useQueryClient();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   
-  // Use the explicit interface for form typing, not the schema inference
+  // Use the explicit type for form
   const addForm = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
