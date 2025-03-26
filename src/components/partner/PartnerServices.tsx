@@ -59,7 +59,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
-// Define interfaces with simple, flat structures
+// Define flat, simple interfaces
 interface Category {
   id: string;
   name: string;
@@ -76,7 +76,7 @@ interface Service {
   created_at?: string;
 }
 
-// Define simple form values type without using z.infer
+// Define explicit form values type - NOT derived from Zod
 type ServiceFormValues = {
   name: string;
   description: string;
@@ -85,7 +85,7 @@ type ServiceFormValues = {
   category_id: string;
 };
 
-// Define schema separately - not used for type inference
+// Define schema separately from types
 const serviceFormSchema = z.object({
   name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
@@ -100,7 +100,7 @@ export function PartnerServices() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   
-  // Use the explicit type for form
+  // Use explicit type for form, not z.infer
   const addForm = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
@@ -112,6 +112,7 @@ export function PartnerServices() {
     },
   });
 
+  // Use explicit type for form, not z.infer
   const editForm = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
@@ -140,7 +141,7 @@ export function PartnerServices() {
     }
   });
   
-  // Fetch partner services
+  // Fetch partner services with explicit type
   const { data: services, isLoading } = useQuery({
     queryKey: ['partner-services', partner?.id],
     queryFn: async () => {
@@ -161,12 +162,12 @@ export function PartnerServices() {
     enabled: !!partner?.id
   });
   
-  // Add service mutation
+  // Add service mutation with explicit parameter type
   const addServiceMutation = useMutation({
     mutationFn: async (values: ServiceFormValues) => {
       if (!partner?.id) throw new Error("Partner not authenticated");
       
-      // Create a complete service object with all required fields
+      // Create service object with explicit properties
       const newService = {
         name: values.name,
         description: values.description,
@@ -200,12 +201,12 @@ export function PartnerServices() {
     }
   });
   
-  // Update service mutation
+  // Update service mutation with explicit parameter type
   const updateServiceMutation = useMutation({
     mutationFn: async (values: ServiceFormValues) => {
       if (!editingService?.id) throw new Error("No service selected for update");
       
-      // Create a complete update object with all required fields
+      // Create update object with explicit properties
       const updateData = {
         name: values.name,
         description: values.description,
