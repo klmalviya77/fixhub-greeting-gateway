@@ -93,13 +93,16 @@ const serviceFormSchema = z.object({
   category_id: z.string().uuid({ message: "Please select a valid category" }),
 });
 
+// Create a type based on the schema for form validation
+type ServiceFormSchemaType = z.infer<typeof serviceFormSchema>;
+
 export function PartnerServices() {
   const { partner } = usePartnerAuth();
   const queryClient = useQueryClient();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   
-  // Create forms directly with the interface
+  // Use the explicit interface for useForm instead of inferring from the schema
   const addForm = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
