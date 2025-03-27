@@ -1,149 +1,169 @@
 
-import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
-import Container from './ui/container';
-import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, User, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAuthenticated, user } = useAuth();
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      const offset = window.scrollY;
-      setIsScrolled(offset > 50);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-  
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Services', path: '/services' },
+    { name: 'About', path: '/about' },
+    { name: 'Contact', path: '/contact' },
+  ];
+
   return (
-    <header 
-      className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        isScrolled ? 'bg-white/90 backdrop-blur-md shadow-subtle py-3' : 'bg-transparent py-5'
-      )}
-    >
-      <Container className="flex items-center justify-between">
-        <Link 
-          to="/" 
-          className="text-2xl font-heading font-semibold text-fixhub-black transition-transform duration-300 hover:scale-[1.02]"
-        >
-          FixHub
-        </Link>
-        
-        <div className="hidden md:flex items-center space-x-8">
-          <nav className="flex items-center space-x-6">
-            <NavLink href="/service-page">Services</NavLink>
-            <NavLink href="/technician/signup">Join as a Professional</NavLink>
-            <NavLink href="/about-us">About Us</NavLink>
-          </nav>
-          
-          <div className="flex items-center space-x-3">
-            {isAuthenticated ? (
-              <Link
-                to="/user-dashboard"
-                className="fixhub-button fixhub-button-ghost px-3 py-2"
-              >
-                Dashboard
-              </Link>
-            ) : (
-              <Link
-                to="/user/login"
-                className="fixhub-button fixhub-button-ghost px-3 py-2"
-              >
-                Log in
-              </Link>
-            )}
-            <Link
-              to="/service-page"
-              className="fixhub-button fixhub-button-primary px-4 py-2 spring-effect"
-            >
-              Book a Service
+    <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-subtle">
+      <div className="fixhub-container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-2">
+              <span className="text-2xl font-bold text-fixhub-blue">FixHub</span>
             </Link>
           </div>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`text-sm font-medium transition-colors ${
+                  isActive(link.path)
+                    ? 'text-fixhub-blue'
+                    : 'text-gray-700 hover:text-fixhub-blue'
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+          
+          {/* CTA Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link to="/login">
+              <Button variant="ghost" size="sm">
+                Log in
+              </Button>
+            </Link>
+            <Link to="/signup">
+              <Button size="sm">Sign up</Button>
+            </Link>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                  For Professionals
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>
+                  <Link to="/technician/login" className="w-full">Technician Login</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/technician/signup" className="w-full">Become a Technician</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          
+          {/* Mobile menu button */}
+          <div className="flex md:hidden">
+            <button
+              onClick={toggleMenu}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-fixhub-blue hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-fixhub-blue"
+            >
+              <span className="sr-only">{isMenuOpen ? 'Close menu' : 'Open menu'}</span>
+              {isMenuOpen ? (
+                <X className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="block h-6 w-6" aria-hidden="true" />
+              )}
+            </button>
+          </div>
         </div>
-        
-        <button 
-          className="block md:hidden"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </Container>
-      
-      {/* Mobile Menu */}
-      <div 
-        className={cn(
-          'fixed inset-0 bg-white z-40 pt-20 px-6 transform transition-transform duration-300 md:hidden',
-          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        )}
-      >
-        <nav className="flex flex-col space-y-6 text-lg">
-          <MobileNavLink href="/service-page" onClick={() => setIsMobileMenuOpen(false)}>
-            Services
-          </MobileNavLink>
-          <MobileNavLink href="/technician/signup" onClick={() => setIsMobileMenuOpen(false)}>
-            Join as a Professional
-          </MobileNavLink>
-          <MobileNavLink href="/about-us" onClick={() => setIsMobileMenuOpen(false)}>
-            About Us
-          </MobileNavLink>
-          
-          {isAuthenticated ? (
-            <MobileNavLink href="/user-dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-              Dashboard
-            </MobileNavLink>
-          ) : (
-            <MobileNavLink href="/user/login" onClick={() => setIsMobileMenuOpen(false)}>
-              Log in
-            </MobileNavLink>
-          )}
-          
-          <Link
-            to="/service-page"
-            className="fixhub-button fixhub-button-primary px-4 py-3 w-full flex justify-center mt-4"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Book a Service
-          </Link>
-        </nav>
       </div>
+      
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div className="md:hidden">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-100">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  isActive(link.path)
+                    ? 'text-fixhub-blue bg-fixhub-light-blue'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-fixhub-blue'
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
+            <div className="pt-4 pb-3 border-t border-gray-100">
+              <div className="flex items-center px-3">
+                <div className="flex-shrink-0">
+                  <User className="h-10 w-10 rounded-full bg-fixhub-light-blue p-2 text-fixhub-blue" />
+                </div>
+                <div className="ml-3">
+                  <div className="text-base font-medium">Account</div>
+                </div>
+              </div>
+              <div className="mt-3 space-y-1 px-3">
+                <Link
+                  to="/login"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-fixhub-blue"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-fixhub-blue"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign up
+                </Link>
+                <Link
+                  to="/technician/login"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-fixhub-blue"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Technician Login
+                </Link>
+                <Link
+                  to="/technician/signup"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-fixhub-blue"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Become a Technician
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
-  );
-};
-
-interface NavLinkProps {
-  href: string;
-  children: React.ReactNode;
-  onClick?: () => void;
-}
-
-const NavLink = ({ href, children }: NavLinkProps) => {
-  return (
-    <Link 
-      to={href} 
-      className="text-fixhub-off-black font-medium relative overflow-hidden hover:text-fixhub-blue transition-colors duration-300 group"
-    >
-      {children}
-      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-fixhub-blue transition-all duration-300 group-hover:w-full"></span>
-    </Link>
-  );
-};
-
-const MobileNavLink = ({ href, children, onClick }: NavLinkProps) => {
-  return (
-    <Link 
-      to={href} 
-      className="text-fixhub-off-black font-medium block py-2 border-b border-fixhub-gray"
-      onClick={onClick}
-    >
-      {children}
-    </Link>
   );
 };
 

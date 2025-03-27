@@ -1,131 +1,128 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Container from './ui/container';
-import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-white pt-16 border-t border-fixhub-gray/50">
-      <Container>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-12">
-          <div>
-            <Link to="/" className="text-2xl font-heading font-semibold text-fixhub-black mb-6 block">
-              FixHub
-            </Link>
-            <p className="text-fixhub-dark-gray mb-6 max-w-xs">
-              Connecting homeowners with skilled professionals for all home service needs.
-              Trust, quality, and reliability in every service.
+    <footer className="bg-fixhub-black text-white pt-16 pb-8">
+      <div className="fixhub-container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold mb-4">FixHub</h3>
+            <p className="text-gray-300 text-sm">
+              Your trusted platform for professional home services and maintenance. 
+              High-quality work guaranteed.
             </p>
-            <div className="flex space-x-4">
-              <SocialButton icon={<Facebook size={18} />} href="#facebook" />
-              <SocialButton icon={<Twitter size={18} />} href="#twitter" />
-              <SocialButton icon={<Instagram size={18} />} href="#instagram" />
-              <SocialButton icon={<Linkedin size={18} />} href="#linkedin" />
+            <div className="flex space-x-4 pt-2">
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Facebook className="h-5 w-5" />
+                <span className="sr-only">Facebook</span>
+              </a>
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Twitter className="h-5 w-5" />
+                <span className="sr-only">Twitter</span>
+              </a>
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Instagram className="h-5 w-5" />
+                <span className="sr-only">Instagram</span>
+              </a>
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Linkedin className="h-5 w-5" />
+                <span className="sr-only">LinkedIn</span>
+              </a>
             </div>
           </div>
           
+          {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
-            <ul className="space-y-4">
-              <FooterLink href="/service-page">Services</FooterLink>
-              <FooterLink href="/about-us">About Us</FooterLink>
-              <FooterLink href="/technician/signup">Join as a Professional</FooterLink>
-              <FooterLink href="/partner/login">Partner Portal</FooterLink>
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              {[
+                { label: 'Home', path: '/' },
+                { label: 'About Us', path: '/about' },
+                { label: 'Services', path: '/services' },
+                { label: 'Contact', path: '/contact' },
+              ].map((link, index) => (
+                <li key={index}>
+                  <Link 
+                    to={link.path} 
+                    className="text-gray-300 hover:text-white text-sm transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
           
+          {/* Services */}
           <div>
-            <h3 className="text-lg font-semibold mb-6">Support</h3>
-            <ul className="space-y-4">
-              <FooterLink href="/help">Help Center</FooterLink>
-              <FooterLink href="/faq">FAQ</FooterLink>
-              <FooterLink href="/contact">Contact Us</FooterLink>
-              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
-              <FooterLink href="/terms">Terms of Service</FooterLink>
+            <h3 className="text-lg font-semibold mb-4">Our Services</h3>
+            <ul className="space-y-2">
+              {[
+                { label: 'Plumbing', path: '/services' },
+                { label: 'Electrical', path: '/services' },
+                { label: 'HVAC', path: '/services' },
+                { label: 'Cleaning', path: '/services' },
+                { label: 'Handyman', path: '/services' },
+              ].map((service, index) => (
+                <li key={index}>
+                  <Link 
+                    to={service.path} 
+                    className="text-gray-300 hover:text-white text-sm transition-colors"
+                  >
+                    {service.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
           
+          {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-6">Contact Us</h3>
-            <ul className="space-y-4">
+            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
+            <ul className="space-y-3">
               <li className="flex items-start">
-                <MapPin className="w-5 h-5 text-fixhub-blue shrink-0 mt-0.5 mr-3" />
-                <span className="text-fixhub-dark-gray">
-                  1234 Market Street, Suite 1000<br />
-                  San Francisco, CA 94103
+                <MapPin className="h-5 w-5 text-fixhub-blue mr-3 mt-0.5" />
+                <span className="text-gray-300 text-sm">
+                  123 Main Street, Suite 500<br />San Francisco, CA 94105
                 </span>
               </li>
               <li className="flex items-center">
-                <Phone className="w-5 h-5 text-fixhub-blue shrink-0 mr-3" />
-                <span className="text-fixhub-dark-gray">(123) 456-7890</span>
+                <Phone className="h-5 w-5 text-fixhub-blue mr-3" />
+                <a href="tel:+15551234567" className="text-gray-300 hover:text-white text-sm transition-colors">
+                  (555) 123-4567
+                </a>
               </li>
               <li className="flex items-center">
-                <Mail className="w-5 h-5 text-fixhub-blue shrink-0 mr-3" />
-                <span className="text-fixhub-dark-gray">support@fixhub.com</span>
+                <Mail className="h-5 w-5 text-fixhub-blue mr-3" />
+                <a href="mailto:support@fixhub.com" className="text-gray-300 hover:text-white text-sm transition-colors">
+                  support@fixhub.com
+                </a>
               </li>
             </ul>
           </div>
         </div>
-      </Container>
-      
-      <div className="border-t border-fixhub-gray/50 py-6">
-        <Container>
+        
+        <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-fixhub-dark-gray text-sm">
-              © {new Date().getFullYear()} FixHub. All rights reserved.
+            <p className="text-gray-400 text-sm">
+              &copy; {new Date().getFullYear()} FixHub. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <span className="text-fixhub-dark-gray text-sm hover:text-fixhub-blue transition-colors">
-                <Link to="/privacy-policy">Privacy Policy</Link>
-              </span>
-              <span className="text-fixhub-dark-gray text-sm hover:text-fixhub-blue transition-colors">
-                <Link to="/terms">Terms of Service</Link>
-              </span>
-              <span className="text-fixhub-dark-gray text-sm hover:text-fixhub-blue transition-colors">
-                <Link to="/sitemap">Sitemap</Link>
-              </span>
+              <Link to="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Terms of Service
+              </Link>
+              <Link to="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Privacy Policy
+              </Link>
             </div>
           </div>
-        </Container>
+        </div>
       </div>
     </footer>
-  );
-};
-
-interface FooterLinkProps {
-  href: string;
-  children: React.ReactNode;
-}
-
-const FooterLink = ({ href, children }: FooterLinkProps) => {
-  return (
-    <li>
-      <Link 
-        to={href} 
-        className="text-fixhub-dark-gray hover:text-fixhub-blue transition-colors"
-      >
-        {children}
-      </Link>
-    </li>
-  );
-};
-
-interface SocialButtonProps {
-  icon: React.ReactNode;
-  href: string;
-}
-
-const SocialButton = ({ icon, href }: SocialButtonProps) => {
-  return (
-    <a 
-      href={href} 
-      className="w-9 h-9 rounded-full bg-fixhub-gray flex items-center justify-center text-fixhub-dark-gray hover:bg-fixhub-blue hover:text-white transition-colors"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {icon}
-    </a>
   );
 };
 
