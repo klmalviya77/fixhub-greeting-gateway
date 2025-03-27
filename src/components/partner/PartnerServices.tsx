@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { usePartnerAuth } from '@/context/PartnerAuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -59,7 +58,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
-// Define flat, simple interfaces
+// Simplified interfaces
 interface Category {
   id: string;
   name: string;
@@ -76,16 +75,7 @@ interface Service {
   created_at?: string;
 }
 
-// Define explicit form values type - NOT derived from Zod
-type ServiceFormValues = {
-  name: string;
-  description: string;
-  rate: number;
-  duration: number;
-  category_id: string;
-};
-
-// Define schema separately from types
+// Schema first approach
 const serviceFormSchema = z.object({
   name: z.string().min(3, { message: "Service name must be at least 3 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
@@ -94,13 +84,22 @@ const serviceFormSchema = z.object({
   category_id: z.string().uuid({ message: "Please select a valid category" }),
 });
 
+// Explicit type definition (not using z.infer)
+type ServiceFormValues = {
+  name: string;
+  description: string;
+  rate: number;
+  duration: number;
+  category_id: string;
+};
+
 export function PartnerServices() {
   const { partner } = usePartnerAuth();
   const queryClient = useQueryClient();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   
-  // Use explicit type for form, not z.infer
+  // Form with explicit type
   const addForm = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
@@ -112,7 +111,7 @@ export function PartnerServices() {
     },
   });
 
-  // Use explicit type for form, not z.infer
+  // Edit form with explicit type
   const editForm = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
@@ -124,8 +123,8 @@ export function PartnerServices() {
     },
   });
   
-  // Fetch categories data
-  const { data: categories } = useQuery({
+  // Simple categories query
+  const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -137,12 +136,12 @@ export function PartnerServices() {
         throw error;
       }
       
-      return data as Category[] || [];
+      return (data || []) as Category[];
     }
   });
   
-  // Fetch partner services with explicit type
-  const { data: services, isLoading } = useQuery({
+  // Simple services query
+  const { data: services = [], isLoading } = useQuery({
     queryKey: ['partner-services', partner?.id],
     queryFn: async () => {
       if (!partner?.id) return [] as Service[];
@@ -157,17 +156,16 @@ export function PartnerServices() {
         throw error;
       }
       
-      return data as Service[] || [];
+      return (data || []) as Service[];
     },
     enabled: !!partner?.id
   });
   
-  // Add service mutation with explicit parameter type
+  // Simplified mutation
   const addServiceMutation = useMutation({
     mutationFn: async (values: ServiceFormValues) => {
       if (!partner?.id) throw new Error("Partner not authenticated");
       
-      // Create service object with explicit properties
       const newService = {
         name: values.name,
         description: values.description,
@@ -201,12 +199,11 @@ export function PartnerServices() {
     }
   });
   
-  // Update service mutation with explicit parameter type
+  // Simplified update mutation
   const updateServiceMutation = useMutation({
     mutationFn: async (values: ServiceFormValues) => {
       if (!editingService?.id) throw new Error("No service selected for update");
       
-      // Create update object with explicit properties
       const updateData = {
         name: values.name,
         description: values.description,
@@ -264,7 +261,7 @@ export function PartnerServices() {
     return category?.name || 'Unknown Category';
   };
   
-  
+  // Rendering part remains the same
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
