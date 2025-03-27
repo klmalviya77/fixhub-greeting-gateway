@@ -21,15 +21,6 @@ import TechnicianDashboardPage from './pages/TechnicianDashboardPage';
 import TechnicianBookingsPage from './pages/TechnicianBookingsPage';
 import TechnicianProfilePage from './pages/TechnicianProfilePage';
 import { TooltipProvider } from "@/components/ui/tooltip";
-import PartnerSignupPage from './pages/PartnerSignupPage';
-import PartnerLoginPage from './pages/PartnerLoginPage';
-import PartnerDashboardPage from './pages/PartnerDashboardPage';
-
-// Import partner dashboard components
-import { PartnerDashboardLayout } from './components/partner/PartnerDashboardLayout';
-import PartnerServicesPage from './pages/PartnerServicesPage';
-import PartnerEarningsPage from './pages/PartnerEarningsPage';
-import PartnerProfilePage from './pages/PartnerProfilePage';
 
 const queryClient = new QueryClient();
 
@@ -64,18 +55,6 @@ function App() {
                 <Route index element={<TechnicianDashboardPage />} />
                 <Route path="bookings" element={<TechnicianBookingsPage />} />
                 <Route path="profile" element={<TechnicianProfilePage />} />
-              </Route>
-
-              {/* Partner Routes */}
-              <Route path="/partner/signup" element={<PartnerSignupPage />} />
-              <Route path="/partner/login" element={<PartnerLoginPage />} />
-              
-              {/* Partner Routes */}
-              <Route path="/partner-dashboard" element={<PartnerDashboardLayout />}>
-                <Route index element={<PartnerDashboardPage />} />
-                <Route path="services" element={<PartnerServicesPage />} />
-                <Route path="earnings" element={<PartnerEarningsPage />} />
-                <Route path="profile" element={<PartnerProfilePage />} />
               </Route>
             </Routes>
           </TooltipProvider>
