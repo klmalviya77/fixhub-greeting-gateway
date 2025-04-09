@@ -1,102 +1,194 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Wrench, Shield, Clock, Star } from 'lucide-react';
+import { ChevronRight, Shield, Clock, Star, ArrowRight, CheckCircle, Home } from 'lucide-react';
 import Container from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
+import Hero from '@/components/Hero';
 
 const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-fixhub-gray">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="pt-20 pb-16 md:pt-28 md:pb-24">
+      <Hero />
+      
+      {/* Services Preview Section */}
+      <section className="py-20 bg-white">
         <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 animate-fade-up">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-fixhub-black leading-tight">
-                Home Maintenance <span className="text-fixhub-blue">Made Simple</span>
-              </h1>
-              <p className="text-lg md:text-xl text-fixhub-off-black max-w-md">
-                Your one-stop solution for reliable home services and maintenance, delivered by verified professionals.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Button size="lg" className="shadow-button px-6 py-6 text-base">
-                  <Link to="/services" className="flex items-center">
-                    Browse Services <ChevronRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" className="shadow-subtle px-6 py-6 text-base">
-                  <Link to="/login">Sign In</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="relative rounded-xl overflow-hidden shadow-elevated animate-fade-up-delay-1">
-              <div className="aspect-video bg-fixhub-light-blue flex items-center justify-center">
-                <img 
-                  src="/placeholder.svg" 
-                  alt="Home service professional" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-fixhub-black/80 to-transparent p-6">
-                <span className="inline-flex items-center rounded-full bg-fixhub-blue/90 px-3 py-1 text-sm font-medium text-white">
-                  <Star className="mr-1 h-4 w-4" /> 4.9/5 Customer Rating
-                </span>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-16 bg-white">
-        <Container>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-heading font-bold mb-4">Why Choose FixHub</h2>
-            <p className="text-fixhub-dark-gray max-w-2xl mx-auto">Experience premium home services with our vetted professionals and seamless booking system.</p>
+          <div className="text-center mb-16">
+            <span className="bg-fixhub-light-blue text-fixhub-blue text-sm font-medium px-4 py-1.5 rounded-full">
+              Our Services
+            </span>
+            <h2 className="text-3xl md:text-4xl font-heading font-bold mt-4 mb-6">Premium Home Services</h2>
+            <p className="text-fixhub-dark-gray max-w-2xl mx-auto">
+              From electrical work to plumbing, cleaning to HVAC maintenance, our vetted professionals 
+              deliver quality service every time.
+            </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                icon: <Wrench className="h-12 w-12 text-fixhub-blue" />,
-                title: "Expert Professionals",
-                description: "All our technicians are vetted and certified to provide top-quality service."
+                icon: <Home className="h-8 w-8 text-white" />,
+                title: "Home Cleaning",
+                description: "Professional cleaning services to keep your home spotless and healthy.",
+                color: "bg-gradient-to-r from-violet-500 to-purple-500"
               },
               {
-                icon: <Shield className="h-12 w-12 text-fixhub-blue" />,
-                title: "Satisfaction Guaranteed",
-                description: "Not satisfied? We'll make it right or your money back."
+                icon: <Shield className="h-8 w-8 text-white" />,
+                title: "Electrical Services",
+                description: "Expert electrical repairs, installations, and maintenance you can trust.",
+                color: "bg-gradient-to-r from-blue-500 to-cyan-500"
               },
               {
-                icon: <Clock className="h-12 w-12 text-fixhub-blue" />,
-                title: "Prompt Service",
-                description: "Schedule services at your convenience with our punctual professionals."
+                icon: <Clock className="h-8 w-8 text-white" />,
+                title: "Plumbing Solutions",
+                description: "Quick and reliable plumbing services to fix any issue in your home.",
+                color: "bg-gradient-to-r from-amber-500 to-orange-500"
               },
-            ].map((feature, index) => (
+            ].map((service, index) => (
               <div 
                 key={index} 
-                className="bg-white p-6 rounded-xl border border-gray-100 shadow-subtle hover:shadow-card transition-shadow duration-300 animate-fade-up"
-                style={{ animationDelay: `${index * 0.1 + 0.2}s` }}
+                className="group relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="bg-fixhub-light-blue p-3 rounded-lg inline-block mb-4">
-                  {feature.icon}
+                <div className={`${service.color} p-6 h-full`}>
+                  <div className="bg-white/20 p-3 rounded-lg inline-flex mb-4">
+                    {service.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-3">{service.title}</h3>
+                  <p className="text-white/90 mb-6">{service.description}</p>
+                  <Link to="/services" className="inline-flex items-center text-white font-medium">
+                    Learn more <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
                 </div>
-                <h3 className="text-xl font-heading font-semibold mb-2">{feature.title}</h3>
-                <p className="text-fixhub-dark-gray">{feature.description}</p>
               </div>
             ))}
           </div>
+          
+          <div className="text-center mt-12">
+            <Link 
+              to="/services"
+              className="inline-flex items-center bg-fixhub-blue hover:bg-fixhub-dark-blue text-white px-6 py-3 rounded-md transition-colors shadow-lg hover:shadow-xl"
+            >
+              View All Services <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </div>
         </Container>
       </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-fixhub-blue text-white">
+      
+      {/* Why Choose Us Section */}
+      <section className="py-20 bg-gradient-to-b from-fixhub-gray to-white">
         <Container>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <img 
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                alt="Professional technician" 
+                className="rounded-xl shadow-xl"
+              />
+            </div>
+            
+            <div className="space-y-8">
+              <div>
+                <span className="bg-fixhub-light-blue text-fixhub-blue text-sm font-medium px-4 py-1.5 rounded-full">
+                  Why Choose FixHub
+                </span>
+                <h2 className="text-3xl md:text-4xl font-heading font-bold mt-4 mb-6">
+                  We Deliver Excellence in Every Service
+                </h2>
+                <p className="text-fixhub-dark-gray mb-8">
+                  At FixHub, we're committed to providing top-quality home services with professionalism, 
+                  reliability, and attention to detail. Here's why customers trust us:
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                {[
+                  { text: "Screened and verified professionals with years of experience" },
+                  { text: "100% satisfaction guarantee on all services" },
+                  { text: "Transparent pricing with no hidden fees" },
+                  { text: "Prompt and reliable scheduling to fit your timetable" },
+                ].map((item, index) => (
+                  <div key={index} className="flex items-start">
+                    <CheckCircle className="h-6 w-6 text-fixhub-blue mr-3 flex-shrink-0" />
+                    <p>{item.text}</p>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="pt-4">
+                <Link
+                  to="/about"
+                  className="inline-flex items-center bg-fixhub-blue hover:bg-fixhub-dark-blue text-white px-6 py-3 rounded-md transition-colors shadow-lg hover:shadow-xl"
+                >
+                  Learn More About Us <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+      
+      {/* Testimonial Preview */}
+      <section className="py-20 bg-white">
+        <Container>
+          <div className="text-center mb-12">
+            <span className="bg-fixhub-light-blue text-fixhub-blue text-sm font-medium px-4 py-1.5 rounded-full">
+              Customer Testimonials
+            </span>
+            <h2 className="text-3xl md:text-4xl font-heading font-bold mt-4 mb-6">
+              What Our Customers Say
+            </h2>
+          </div>
+          
+          <div className="max-w-4xl mx-auto bg-white rounded-2xl p-8 md:p-12 shadow-xl border border-gray-100">
+            <div className="text-5xl text-fixhub-blue opacity-40 mb-4">"</div>
+            <p className="text-xl md:text-2xl text-fixhub-black italic mb-8">
+              FixHub connected me with an amazing electrician who fixed my wiring issues in no time. 
+              The booking process was seamless, and the technician was professional and knowledgeable. 
+              I'll definitely be using FixHub for all my home service needs in the future!
+            </p>
+            
+            <div className="flex items-center">
+              <div className="mr-4">
+                <img 
+                  src="https://randomuser.me/api/portraits/women/45.jpg" 
+                  alt="Customer" 
+                  className="w-16 h-16 rounded-full object-cover border-2 border-fixhub-light-blue"
+                />
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold">Sarah Johnson</h4>
+                <div className="flex text-amber-400 mt-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center mt-12">
+            <Link 
+              to="/testimonials"
+              className="inline-flex items-center text-fixhub-blue hover:text-fixhub-dark-blue font-medium transition-colors"
+            >
+              View All Testimonials <ChevronRight className="ml-1 h-5 w-5" />
+            </Link>
+          </div>
+        </Container>
+      </section>
+      
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-to-r from-fixhub-blue to-fixhub-dark-blue text-white">
+        <Container>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 max-w-6xl mx-auto">
             <div className="max-w-xl">
               <h2 className="text-3xl font-heading font-bold mb-4">Ready to get started?</h2>
-              <p className="text-white/90">Join thousands of satisfied customers who trust FixHub for their home maintenance needs.</p>
+              <p className="text-white/90">
+                Join thousands of satisfied customers who trust FixHub for their home maintenance needs.
+                Book your first service today!
+              </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" variant="secondary" className="bg-white text-fixhub-blue hover:bg-fixhub-gray hover:text-fixhub-blue border-none">

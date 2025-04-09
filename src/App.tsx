@@ -32,7 +32,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <TooltipProvider>
-            <Toaster />
+            <Toaster position="top-center" richColors closeButton />
             <Header />
             <main className="flex-grow">
               <Routes>
