@@ -20,53 +20,56 @@ import { TechnicianDashboardLayout } from './components/technician/TechnicianDas
 import TechnicianDashboardPage from './pages/TechnicianDashboardPage';
 import TechnicianBookingsPage from './pages/TechnicianBookingsPage';
 import TechnicianProfilePage from './pages/TechnicianProfilePage';
-import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from './components/Header';
 import Footer from './components/Footer';
+import { AuthProvider } from './context/AuthContext';
+import { TechnicianAuthProvider } from './context/TechnicianAuthContext';
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div className="min-h-[100dvh] flex flex-col">
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <TooltipProvider>
-            <Toaster position="top-center" richColors closeButton />
-            <Header />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/services" element={<ServicesPage />} />
-                <Route path="/book-service/:serviceId" element={<BookServicePage />} />
-                
-                {/* User Routes */}
-                <Route path="/user-dashboard" element={<UserDashboardLayout />}>
-                  <Route index element={<UserDashboardPage />} />
-                  <Route path="bookings" element={<UserBookingsPage />} />
-                  <Route path="profile" element={<UserProfilePage />} />
-                </Route>
-                
-                <Route path="/technician/signup" element={<TechnicianSignupPage />} />
-                <Route path="/technician/login" element={<TechnicianLoginPage />} />
-                
-                {/* Technician Routes */}
-                <Route path="/technician-dashboard" element={<TechnicianDashboardLayout />}>
-                  <Route index element={<TechnicianDashboardPage />} />
-                  <Route path="bookings" element={<TechnicianBookingsPage />} />
-                  <Route path="profile" element={<TechnicianProfilePage />} />
-                </Route>
-              </Routes>
-            </main>
-            <Footer />
-          </TooltipProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <TechnicianAuthProvider>
+            <div className="min-h-[100dvh] flex flex-col">
+              <Toaster position="top-center" richColors closeButton />
+              <Header />
+              <main className="flex-grow">
+                <Routes>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/services" element={<ServicesPage />} />
+                  <Route path="/book-service/:serviceId" element={<BookServicePage />} />
+                  
+                  {/* User Routes */}
+                  <Route path="/user-dashboard" element={<UserDashboardLayout />}>
+                    <Route index element={<UserDashboardPage />} />
+                    <Route path="bookings" element={<UserBookingsPage />} />
+                    <Route path="profile" element={<UserProfilePage />} />
+                  </Route>
+                  
+                  <Route path="/technician/signup" element={<TechnicianSignupPage />} />
+                  <Route path="/technician/login" element={<TechnicianLoginPage />} />
+                  
+                  {/* Technician Routes */}
+                  <Route path="/technician-dashboard" element={<TechnicianDashboardLayout />}>
+                    <Route index element={<TechnicianDashboardPage />} />
+                    <Route path="bookings" element={<TechnicianBookingsPage />} />
+                    <Route path="profile" element={<TechnicianProfilePage />} />
+                  </Route>
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+          </TechnicianAuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
